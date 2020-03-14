@@ -66,8 +66,12 @@ public class WriteImpl implements write {
             }
         }else {//如果客户端的channnel换了，那么就可以覆盖的方式在此建立连接
             abstractCoustom = coustoms.get(cquptmcls[1]);
-            if (abstractCoustom.getChannel() != channel && !abstractCoustom.getChannel().isActive())
-                abstractCoustom.setChannel(channel);
+            if (abstractCoustom.getChannel() != channel && !abstractCoustom.getChannel().isActive()) {
+                if (abstractCoustom.getChannel().remoteAddress().toString().equals(channel.remoteAddress().toString()))
+                    abstractCoustom.setChannel(channel);
+                else
+                    channel.writeAndFlush("错误，地址不对");
+            }
             else if (abstractCoustom.getChannel() == channel){
                 //将请求的数据放入消息队列中，让productor逐个去获取
                 abstractCoustom = productor.getCoustoms().get(cquptmcls[1]);
@@ -83,13 +87,8 @@ public class WriteImpl implements write {
                 productor.executeCoustomNeed(channel,
                             "你发送了错误的消息，你的名字和该消息包含的消息错误",
                             findCustom(channel,coustoms));
-                return;
             }
         }
-//        //获取数据，将数据
-//        String result = cquptmcls[2];
-//        //将数据发送给具体的生产者
-//        productor.executeCoustomNeed(cquptmcls[1],result);
     }
     public AbstractCoustom findCustom(Channel channel,Map<String,AbstractCoustom> maps){
         for(Map.Entry<String,AbstractCoustom> map:maps.entrySet()){
