@@ -60,5 +60,6 @@ public class HandlerRequestRunnableEvent implements Runnable{
             channel.writeAndFlush("this is you request "+s+sb.toString()
                     + " " + "and my answer is this are you ok "+System.currentTimeMillis());
         }
+        arrayList.clear();
     }
 }
